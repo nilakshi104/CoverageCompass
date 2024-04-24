@@ -14,7 +14,7 @@ user_prompt = st.chat_input("Ask Gemini-Pro...")
 if user_prompt:
     # response = requests.get('http://127.0.0.1:5000/claimval/gemini/chat')
     st.write(user_prompt)
-    response = requests.post('http://127.0.0.1:5000/claimval/gemini/chat', json={"query":user_prompt})
+    response = requests.post('https://test-flask-backend.onrender.com/claimval/gemini/chat', json={"query":user_prompt})
     if response.status_code == 200:
         data = response.json()
         st.write(data)
