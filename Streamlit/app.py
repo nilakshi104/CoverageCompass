@@ -9,17 +9,31 @@ st.set_page_config(
 
 st.title("🤖 Gemini Pro - ChatBot")
 
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history =[]
+
+def translate_role_for_streamlit(user_role):
+    if user_role == "model":
+        return "assistant"
+    else:
+        return user_role
+
+for message in st.session_state.chat_history:
+    with st.chat_message(translate_role_for_streamlit(message["role"])):
+        st.markdown(message["text"])
+
 
 user_prompt = st.chat_input("Ask Gemini-Pro...")
 if user_prompt:
-    # response = requests.get('http://127.0.0.1:5000/claimval/gemini/chat')
-    st.write(user_prompt)
-    response = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/chat', json={"query":user_prompt})
-    if response.status_code == 200:
-        data = response.json()
-        st.write(data)
+    st.session_state.chat_history.append({"role": "user", "text": user_prompt})
+    st.chat_message("user").markdown(user_prompt)
+    gemini_response = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/chat', json={"query":user_prompt})
+    if gemini_response.status_code == 200:
+        gemini_text = gemini_response.json()
+        st.session_state.chat_history.append({"role": "assistant", "text": gemini_text})
+        st.chat_message("assistant").markdown(gemini_text)
     else:
-        st.error(f"Error: {response.status_code}")
+        st.error(f"Error: {gemini_response.status_code}")
 
 
 
