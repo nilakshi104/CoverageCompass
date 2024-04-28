@@ -1,6 +1,6 @@
 from flask import Flask,request
 from flask_restx import Resource
-from routes.bp import api
+from ...routes.bp import api
 from .services import LLMBOT
 
 @api.route("/gemini/chat")
