@@ -20,7 +20,7 @@ class LLMBOT:
     
     def ask_user_data(self, policy_data):
         query = """
-        Below policy text is provided as context. Understand the context and output necessary inputs required from user to verify if their damage is claimable under the policy provided in context.
+        Below policy text is provided as context. Understand the context and output necessary json inputs required from user to verify if their damage is claimable under the policy provided in context. Note that only json should be returned as answer.
         Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
         provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
         Context: """ + policy_data

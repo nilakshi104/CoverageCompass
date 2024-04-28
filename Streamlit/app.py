@@ -37,6 +37,15 @@ def main():
     user_prompt = st.chat_input("Ask Gemini-Pro...")
     extracted_text = extract_text_from_pdf(uploaded_pdfs)
     
+    required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/claimval', json={"query":extracted_text})
+    if required_user_data.status_code == 200:
+        # print(required_user_data.json())
+        # required_user_text = required_user_data.json()
+        # st.session_state.chat_history.append({"role": "assistant", "text": gemini_text})
+        st.chat_message("assistant").markdown(required_user_data.json())
+    else:
+        st.error(f"Error: {required_user_data.status_code}")
+
     # if user_prompt:
     #     st.session_state.chat_history.append({"role": "user", "text": user_prompt})
     #     st.chat_message("user").markdown(user_prompt)
