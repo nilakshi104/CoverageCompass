@@ -33,18 +33,31 @@ def main():
         with st.chat_message(translate_role_for_streamlit(message["role"])):
             st.markdown(message["text"])
 
-    uploaded_pdfs = st.file_uploader("Upload your Policy PDFs", type="pdf", accept_multiple_files=True)
-    user_prompt = st.chat_input("Ask Gemini-Pro...")
+    #Step1 : 
+    uploaded_pdfs = st.file_uploader("Upload your Policy PDFs to know required user data to be fed", type="pdf", accept_multiple_files=True)
     extracted_text = extract_text_from_pdf(uploaded_pdfs)
-    
-    required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/claimval', json={"query":extracted_text})
+    required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/userdata', json={"policy":extracted_text})
     if required_user_data.status_code == 200:
-        # print(required_user_data.json())
         # required_user_text = required_user_data.json()
-        # st.session_state.chat_history.append({"role": "assistant", "text": gemini_text})
+        st.session_state.chat_history.append({"role": "assistant", "text": required_user_data.json()})
         st.chat_message("assistant").markdown(required_user_data.json())
     else:
         st.error(f"Error: {required_user_data.status_code}")
+
+    #Step2 :
+    user_prompt = st.chat_input("Enter required user data in JSON formate")
+    st.session_state.chat_history.append({"role": "user", "text": user_prompt})
+    claim_info = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/claimval', json={"policy":extracted_text, "user_data":user_prompt})
+    if claim_info.status_code == 200:
+        claim_info_text = claim_info.json()
+        st.session_state.chat_history.append({"role": "assistant", "text": claim_info_text})
+        st.chat_message("assistant").markdown(claim_info_text)
+    else:
+        st.error(f"Error: {claim_info.status_code}")
+
+
+if __name__ == "__main__":
+    main()
 
     # if user_prompt:
     #     st.session_state.chat_history.append({"role": "user", "text": user_prompt})
@@ -57,8 +70,6 @@ def main():
     #     else:
     #         st.error(f"Error: {gemini_response.status_code}")
 
-if __name__ == "__main__":
-    main()
 
 # def main():
 #     st.set_page_config("Chat PDF")
