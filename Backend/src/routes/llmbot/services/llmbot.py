@@ -29,6 +29,16 @@ class LLMBOT:
         response = model.generate_content(query)
         return response.text
     
+    def check_claim(self, policy_data, user_data):
+        query = """
+        Below policy text is provided as context. Use Context and User data json provided below and output if user can get claim on not. Output one liner. Output "Non claimable" if user can't claim policy and "Claimable" in other case
+        Context: """ + policy_data + "\n\n User data" + user_data
+
+        model= self.get_model()
+        response = model.generate_content(query)
+        return response.text
+
+    
 
 
 # Below code is useful for implementing RAG
