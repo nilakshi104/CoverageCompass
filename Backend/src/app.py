@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from .routes import app_register_bp
+from routes import app_register_bp
 
 app = Flask(__name__)
 
