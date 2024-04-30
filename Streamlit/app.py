@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from PyPDF2 import PdfReader
+import json
 
 def extract_text_from_pdf(uploaded_pdfs):
     if uploaded_pdfs is not None:
@@ -22,6 +23,25 @@ def translate_role_for_streamlit(user_role):
     else:
         return user_role
 
+def is_json(input_string):
+    try:
+        json_object = json.loads(input_string)
+    except ValueError as e:
+        return False
+    return True
+
+def return_assistant_response(response):
+        try:
+            if response.status_code == 200:
+                # print("inside streamlit:",required_user_data.json())
+                response = response.json()
+                st.session_state.chat_history.append({"role": "assistant", "text": response})
+                st.chat_message("assistant").markdown(response)
+            else:
+                st.error("Status_code", response.status_code)
+        except Exception as e:
+            st.error(f"An unexpected error occurred: {e} with Status_code {response.status_code}")
+
 def main():
     st.set_page_config(page_title="Chat with Gemini-Powered CoverageCompass!",page_icon=":brain:",layout="centered")
     st.title("🤖 CoverageCompass") 
@@ -33,42 +53,53 @@ def main():
         with st.chat_message(translate_role_for_streamlit(message["role"])):
             st.markdown(message["text"])
 
+    user_prompt = st.chat_input("Enter input")
+
     #Step1 : 
-    uploaded_pdfs = st.file_uploader("Upload your Policy PDFs to know required user data to be fed", type="pdf", accept_multiple_files=True)
-    extracted_text = extract_text_from_pdf(uploaded_pdfs)
-    required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/userdata', json={"policy":extracted_text})
-    if required_user_data.status_code == 200:
-        # required_user_text = required_user_data.json()
-        st.session_state.chat_history.append({"role": "assistant", "text": required_user_data.json()})
-        st.chat_message("assistant").markdown(required_user_data.json())
-    else:
-        st.error(f"Error: {required_user_data.status_code}")
+    with st.sidebar:
+        
+        uploaded_pdfs = st.file_uploader(label="Upload your Policy PDFs to know required user data to be fed", type="pdf", accept_multiple_files=True)
+        extracted_text = extract_text_from_pdf(uploaded_pdfs)
+        submit_policy_pdf=st.button("Submit & Process")
+        st.markdown("""
+        Steps Followed :
+        1. Upload policy document/s Click "Submit & Proceed".
+        2. BOT will output required json response from user. Enter required response in JSON format.
+        3. Model will evaluate the User JSON response and provides result as "CLAIMABLE" or "NON-CLAIMABLE".
+        """)
+    if submit_policy_pdf:
+        with st.spinner("Processing..."):   
+            required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/userdata', json={"policy":extracted_text})
+            return_assistant_response(required_user_data)
 
     #Step2 :
-    user_prompt = st.chat_input("Enter required user data in JSON formate")
-    st.session_state.chat_history.append({"role": "user", "text": user_prompt})
-    claim_info = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/claimval', json={"policy":extracted_text, "user_data":user_prompt})
-    if claim_info.status_code == 200:
-        claim_info_text = claim_info.json()
-        st.session_state.chat_history.append({"role": "assistant", "text": claim_info_text})
-        st.chat_message("assistant").markdown(claim_info_text)
-    else:
-        st.error(f"Error: {claim_info.status_code}")
+    if user_prompt:
+            if is_json(user_prompt):
+                user_prompt= f"```json {user_prompt} ```"
+            st.session_state.chat_history.append({"role": "user", "text": user_prompt})
+            st.chat_message("user").markdown(user_prompt)
+            with st.spinner("Processing..."):  
+                claim_info = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/claimval', json={"policy":extracted_text, "user_data":user_prompt})
+                return_assistant_response(claim_info)
 
 
 if __name__ == "__main__":
     main()
 
-    # if user_prompt:
-    #     st.session_state.chat_history.append({"role": "user", "text": user_prompt})
-    #     st.chat_message("user").markdown(user_prompt)
-    #     gemini_response = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/chat', json={"query":user_prompt})
-    #     if gemini_response.status_code == 200:
-    #         gemini_text = gemini_response.json()
-    #         st.session_state.chat_history.append({"role": "assistant", "text": gemini_text})
-    #         st.chat_message("assistant").markdown(gemini_text)
-    #     else:
-    #         st.error(f"Error: {gemini_response.status_code}")
+
+
+
+
+# if user_prompt:
+#     st.session_state.chat_history.append({"role": "user", "text": user_prompt})
+#     st.chat_message("user").markdown(user_prompt)
+#     gemini_response = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/chat', json={"query":user_prompt})
+#     if gemini_response.status_code == 200:
+#         gemini_text = gemini_response.json()
+#         st.session_state.chat_history.append({"role": "assistant", "text": gemini_text})
+#         st.chat_message("assistant").markdown(gemini_text)
+#     else:
+#         st.error(f"Error: {gemini_response.status_code}")
 
 
 # def main():
