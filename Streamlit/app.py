@@ -72,7 +72,7 @@ def main():
         submit_policy_pdf=st.button("Submit & Process")
     if submit_policy_pdf:
         with st.spinner("Processing..."):   
-            required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/userdata', json={"policy":extracted_text})
+            required_user_data = requests.post('https://cov-comp-server.onrender.com/covcomp/gemini/userdata', json={"policy":extracted_text})
             return_assistant_response(required_user_data)
 
     #Step2 :
@@ -82,7 +82,7 @@ def main():
             st.session_state.chat_history.append({"role": "user", "text": user_prompt})
             st.chat_message("user").markdown(user_prompt)
             with st.spinner("Processing..."):  
-                claim_info = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/claimval', json={"policy":extracted_text, "user_data":user_prompt})
+                claim_info = requests.post('https://cov-comp-server.onrender.com/covcomp/gemini/claimval', json={"policy":extracted_text, "user_data":user_prompt})
                 return_assistant_response(claim_info)
 
 
