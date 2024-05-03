@@ -81,7 +81,7 @@ class LLMBOT:
 	    1) Below policy text is provided as context. Using the provided policy context, 
         identify all necessary user inputs required to check claim eligibility. 
         Construct an algebraic expression incorporating these user input requirements using logical operators and variables. 
-        Prompt the user to provide all necessary inputs in JSON format only. \n
+        Always input incident description from user. Prompt the user to provide all necessary inputs in JSON format only. \n
         If you don't know the answer, just say that you don't know the answer. Do not try to make up an answer. \n
         Please do your best, my career depends on this. \n\n
         Context: """ + policy_data
