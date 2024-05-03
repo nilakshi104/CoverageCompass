@@ -4,8 +4,7 @@ Project Video: https://www.youtube.com/watch?v=dOyUxjD8vUM
 
 <img width="895" alt="covcomp1" src="https://github.com/nilakshi104/CoverageCompass/assets/50697244/45688c0a-59b8-4036-bc93-f7fb864ec453">
 
-<img width="523" alt="covcomp3" src="https://github.com/nilakshi104/CoverageCompass/assets/50697244/0a3dfa6d-0fba-4ead-81ab-97f9712a9cdd">
-
+<img width="897" alt="covcomp2" src="https://github.com/nilakshi104/CoverageCompass/assets/50697244/cf8b1511-5368-4d6d-8c70-4bf268968647">
 
 ## Project Description:
 
