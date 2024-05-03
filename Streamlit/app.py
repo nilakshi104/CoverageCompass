@@ -53,20 +53,23 @@ def main():
         with st.chat_message(translate_role_for_streamlit(message["role"])):
             st.markdown(message["text"])
 
-    user_prompt = st.chat_input("Enter input")
+    user_prompt = st.chat_input("Enter input to chat with CoverageCompass powered with gemini-1.5-pro-latest model")
 
     #Step1 : 
     with st.sidebar:
-        
-        uploaded_pdfs = st.file_uploader(label="Upload your Policy PDFs to know required user data to be fed", type="pdf", accept_multiple_files=True)
+        st.markdown("""
+        To determine if vehicle damage is eligible for a claim under the uploaded policy, adhere to the following instructions:
+        1. Upload the policy document(s) and click "Submit & Proceed".
+        2. The bot will prompt you to provide additional details about the incident in JSON format. Enter the details accordingly.
+        3. The bot will assess the user's JSON response and the policy, then present the result as either "CLAIMABLE" or "NON-CLAIMABLE," along with reasoning. \n
+        Happy botting!
+        """)
+
+        st.markdown("-"*30)
+
+        uploaded_pdfs = st.file_uploader(label="Upload the policy documents below", type="pdf", accept_multiple_files=True)
         extracted_text = extract_text_from_pdf(uploaded_pdfs)
         submit_policy_pdf=st.button("Submit & Process")
-        st.markdown("""
-        Steps Followed :
-        1. Upload policy document/s Click "Submit & Proceed".
-        2. BOT will output required json response from user. Enter required response in JSON format.
-        3. Model will evaluate the User JSON response and provides result as "CLAIMABLE" or "NON-CLAIMABLE".
-        """)
     if submit_policy_pdf:
         with st.spinner("Processing..."):   
             required_user_data = requests.post('https://test-streamlit-app-1.onrender.com/covcomp/gemini/userdata', json={"policy":extracted_text})
@@ -85,66 +88,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-# if user_prompt:
-#     st.session_state.chat_history.append({"role": "user", "text": user_prompt})
-#     st.chat_message("user").markdown(user_prompt)
-#     gemini_response = requests.post('https://test-streamlit-app-1.onrender.com/claimval/gemini/chat', json={"query":user_prompt})
-#     if gemini_response.status_code == 200:
-#         gemini_text = gemini_response.json()
-#         st.session_state.chat_history.append({"role": "assistant", "text": gemini_text})
-#         st.chat_message("assistant").markdown(gemini_text)
-#     else:
-#         st.error(f"Error: {gemini_response.status_code}")
-
-
-# def main():
-#     st.set_page_config("Chat PDF")
-#     st.header("Chat with PDF using Gemini💁")
-
-#     user_question = st.text_input("Ask a Question from the PDF Files")
-
-#     if user_question:
-#         user_input(user_question)
-
-#     with st.sidebar:
-#         st.title("Menu:")
-#         pdf_docs = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button", accept_multiple_files=True)
-#         if st.button("Submit & Process"):
-#             with st.spinner("Processing..."):
-#                 raw_text = get_pdf_text(pdf_docs)
-#                 text_chunks = get_text_chunks(raw_text)
-#                 get_vector_store(text_chunks)
-#                 st.success("Done")
-
-# def translate_role_for_streamlit(user_role):
-#     if user_role == "model":
-#         return "assistant"
-#     else:
-#         return user_role
-
-# Initialize chat session in streamlit if not already present
-# if "chat_session" not in st.session_state:
-#     st.session_state.chat_session = LLMBOT().generate_response().start_chat(history=[])
-
-# for message in st.session_state.chat_session.history:
-#     with st.chat_message(translate_role_for_streamlit(message.role)):
-#         st.markdown(message.parts[0].text)
-
-# Input field for user's message
-
-# if user_prompt:
-#     response = 
-    # Add user's message to chat and display it
-    # st.chat_message("user").markdown(user_prompt)
-
-    # Send user's message to Gemini-Pro and get the response
-    # gemini_response = st.session_state.chat_session.send_message(user_prompt)
-
-    # # Display Gemini-Pro's response
-    # with st.chat_message("assistant"):
-    #     st.markdown(gemini_response.text)

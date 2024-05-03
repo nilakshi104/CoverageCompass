@@ -70,9 +70,20 @@ class LLMBOT:
     
     def ask_user_data(self, policy_data):
         query = """
-        Below policy text is provided as context. Understand the context and output necessary json inputs required from user to verify if their damage is claimable under the policy provided in context. Note that only json should be returned as answer.
-        Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
-        provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
+        You are a seasoned AI car insurance agent tasked with assessing whether car damage is eligible for a claim under a given policy. 
+        Your role involves thoroughly understanding the policy terms and correlating them with real-life situations. 
+        Use your knowledge to interpret the policy comprehensively beyond its literal text.  \n\n
+        Here are examples illustrating the integration of general knowledge and policy details in assessing claim eligibility:\n
+        1) In scenarios of car theft, even though if the policy doesn't specifically mention about filing an FIR, 
+        as it is a necessary step needed in this case, you should reject the claim if there is no FIR. \n
+        2) If date of accident is in future compared to validation date of policy then you should reject the claim. \n\n
+        Follow below steps to determine if car damage is claimable under provided policy :
+	    1) Below policy text is provided as context. Using the provided policy context, 
+        identify all necessary user inputs required to check claim eligibility. 
+        Construct an algebraic expression incorporating these user input requirements using logical operators and variables. 
+        Prompt the user to provide all necessary inputs in JSON format only. \n
+        If you don't know the answer, just say that you don't know the answer. Do not try to make up an answer. \n
+        Please do your best, my career depends on this. \n\n
         Context: """ + policy_data
 
         model= self.get_model()
@@ -82,25 +93,19 @@ class LLMBOT:
         
         
     
-    def check_claim(self, policy_data, user_data):
+    def check_claim(self, policy, previous_result, user_data):
         query = """
-        Below policy text is provided as context. Use Context and User data json provided below and output if user can get claim on not. Output one liner. Output "Non claimable" if user can't claim policy and "Claimable" in other case
-        Context: """ + policy_data + "\n\n User data" + user_data
+        2) Below user data is provided as context. Incorporate below user data values into the algebraic expression generated in the previous step as given below. 
+        Determine whether the damage is deemed "CLAIMABLE" or "NON-CLAIMABLE" based on the output of the algebraic expression.
+        In both scenarios, briefly outline the factors influencing your decision-making process \n
+        If you don't know the answer, just say that you don't know the answer. Do not try to make up an answer. \n
+        Please do your best, my career depends on this. \n\n
+        User data""" + user_data + "\n\n output from Prvious Step :" + previous_result + "\n\n policy details: " + policy
 
         model= self.get_model()
         response = model.generate_content(query)
         # return response.text
         return self.return_bot_response(response)
-
-    
-
-
-# Below code is useful for implementing RAG
-# model = ChatGoogleGenerativeAI(model="gemini-1.5-pro-latest", temperature=0.3)
-# prompt = PromptTemplate(template = prompt_template, input_variables = ["context"])
-# chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
-# response = chain({"context":policy_data}, return_only_outputs=True)
-    
     
     
 

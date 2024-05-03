@@ -33,8 +33,8 @@ class ClaimVal(Resource):
     def post(self):
         try:
             request_data=request.get_json()
-            policy, user_data=request_data["policy"], request_data["user_data"]
-            claim_info = LLMBOT().check_claim(policy, user_data)
+            policy, previous_result, user_data=request_data["policy"], request_data["previous_result"], request_data["user_data"]
+            claim_info = LLMBOT().check_claim(policy, previous_result, user_data)
         except Exception as e:
             raise Exception(e)
         return claim_info, 200
