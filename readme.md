@@ -8,7 +8,7 @@ Project Video: https://www.youtube.com/watch?v=dOyUxjD8vUM
 
 ## Project Description:
 
-Coverage Compass is an innovative AI-powered solution designed to revolutionize the vehicle insurance claim experience for both insurance company and user. Leveraging the power of LLMs (Gemini-1.5-pro-latest model), Coverage Compass acts as an intelligent guide, helping navigate the complexities of vehicle insurance with ease and clarity.
+Coverage Compass is an innovative AI-powered solution designed to streamline the vehicle insurance claim experience for both insurance company and user. Leveraging the power of LLMs (Gemini-1.5-pro-latest model), Coverage Compass acts as an intelligent guide, helping navigate the complexities of vehicle insurance with ease and clarity.
 
 ## User Flow:
 
